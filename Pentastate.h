@@ -1,6 +1,9 @@
 #pragma once
 #include <iostream>
 
+/**
+ * Represents the state of a binary value and the transition between states
+ */
 enum class Pentastate
 {
   None,

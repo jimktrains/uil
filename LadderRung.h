@@ -3,21 +3,80 @@
 #include "LadderInput.h"
 #include "LadderOutput.h"
 
+/**
+ * Represents a rung in the ladder logic.
+ *
+ * This class is quite odd.  It's templated by the stack depth,
+ * but that value is never used outside a template.  Moreover,
+ * the class only has a static data member, and all member functions
+ * have `__attribute__((always_inline))`.
+ *
+ * The template is used to specify the stack depth. It is check at compile
+ * time whenever the stack depth is changed to ensure it doesn't over or
+ * under flow.
+ *
+ * The `always_inline` is present to force the compiler to _not_ generate
+ * copies of the class for each for each level in the stack.  Additionally,
+ * this shouldn't be too bad since each function only has a single
+ * statement and returns a new `LadderRung` at the correct stack depth. The
+ * new object is shuffled away in the inlining and becomes useful only to
+ * the type checker, which results in less code being generated and run upon
+ * each function call.
+ *
+ * Example:
+ *
+ *    LadderRung<0>
+ *      .LD(input)
+ *      .OR(input2)
+ *      .MPS()
+ *        .LD(input3)
+ *        .AND(input4)
+ *      .ORB()
+ *      .OUT(output);
+ */
 template<unsigned char STACK_DEPTH>
 class LadderRung
 {
   public:
     static Pentastate accum;
+    /**
+     * Loads a value into the accumulator
+     */
     LadderRung<STACK_DEPTH> LD(LadderInput& in);
+    /**
+     * Outputs the accumulator
+     */
     LadderRung<STACK_DEPTH> OUT(LadderOutput& out);
 
+    /**
+     * AND the accumulator and input, placing the result in the accumulator
+     */
     LadderRung<STACK_DEPTH> AND(LadderInput& in);
+    /**
+     * OR the accumulator and input, placing the result in the accumulator
+     */
     LadderRung<STACK_DEPTH> OR(LadderInput& in);
 
+    /**
+     * Inverts the value in the accumulator, storing the results in the
+     * accumulator
+     */
     LadderRung<STACK_DEPTH> INV();
 
+    /**
+     * Pushes the accumulator onto the stack, rests the accumulator, and
+     * increments the stack.
+     */
     LadderRung<STACK_DEPTH + 1> MPS();
+    /**
+     * ORs the value on the top of the stack and the accumulator, placing the
+     * result in the accumulator and decrementing the stack.
+     */
     LadderRung<STACK_DEPTH - 1> ORB();
+    /**
+     * ANDs the value on the top of the stack and the accumulator, placing the
+     * result in the accumulator and decrementing the stack.
+     */
     LadderRung<STACK_DEPTH - 1> ANDB();
 };
 

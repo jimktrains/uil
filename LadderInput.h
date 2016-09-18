@@ -1,6 +1,9 @@
 #pragma once
 #include "Pentastate.h"
 
+/**
+ * Represents an input into the system.
+ */
 class LadderInput
 {
   public:

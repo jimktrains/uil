@@ -1,6 +1,9 @@
 #pragma once
 #include "LadderInput.h"
 
+/**
+ * Represents an output from the system
+ */
 class LadderOutput : public LadderInput
 {
   public:
