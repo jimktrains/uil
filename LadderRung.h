@@ -14,9 +14,11 @@ class LadderRung
     LadderRung<STACK_DEPTH> AND(LadderInput& in);
     LadderRung<STACK_DEPTH> OR(LadderInput& in);
 
+    LadderRung<STACK_DEPTH> INV();
+
     LadderRung<STACK_DEPTH + 1> MPS();
     LadderRung<STACK_DEPTH - 1> ORB();
-
+    LadderRung<STACK_DEPTH - 1> ANDB();
 };
 
 constexpr unsigned char MAX_STACK_DEPTH = 3;
@@ -58,10 +60,10 @@ LadderRung<STACK_DEPTH> LadderRung<STACK_DEPTH> :: OR(LadderInput& in)
 
 template<unsigned char STACK_DEPTH>
 inline __attribute__((always_inline))
-LadderRung<STACK_DEPTH - 1> LadderRung<STACK_DEPTH> :: ORB()
+LadderRung<STACK_DEPTH> LadderRung<STACK_DEPTH> :: INV()
 {
-  static_assert(STACK_DEPTH > 0, "Min Stack Depth exceeded");
-  return LadderRung<STACK_DEPTH - 1>();
+  accum = _INV(accum);
+  return LadderRung<STACK_DEPTH>();
 }
 
 template<unsigned char STACK_DEPTH>
@@ -72,3 +74,22 @@ LadderRung<STACK_DEPTH + 1> LadderRung<STACK_DEPTH> :: MPS()
   LadderRung<STACK_DEPTH + 1>::accum = Pentastate::None;
   return LadderRung<STACK_DEPTH + 1>();
 }
+
+template<unsigned char STACK_DEPTH>
+inline __attribute__((always_inline))
+LadderRung<STACK_DEPTH - 1> LadderRung<STACK_DEPTH> :: ORB()
+{
+  static_assert(STACK_DEPTH > 0, "Min Stack Depth exceeded");
+  LadderRung<STACK_DEPTH - 1>::accum = _OR(accum, LadderRung<STACK_DEPTH - 1>::accum);
+  return LadderRung<STACK_DEPTH - 1>();
+}
+
+template<unsigned char STACK_DEPTH>
+inline __attribute__((always_inline))
+LadderRung<STACK_DEPTH - 1> LadderRung<STACK_DEPTH> :: ANDB()
+{
+  static_assert(STACK_DEPTH > 0, "Min Stack Depth exceeded");
+  LadderRung<STACK_DEPTH - 1>::accum = _AND(accum, LadderRung<STACK_DEPTH - 1>::accum);
+  return LadderRung<STACK_DEPTH - 1>();
+}
+
