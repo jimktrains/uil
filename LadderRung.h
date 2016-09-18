@@ -39,6 +39,7 @@ class LadderRung
 {
   public:
     static Pentastate accum;
+    static constexpr unsigned char MAX_STACK_DEPTH = 3;
     /**
      * Loads a value into the accumulator
      */
@@ -80,7 +81,6 @@ class LadderRung
     LadderRung<STACK_DEPTH - 1> ANDB();
 };
 
-constexpr unsigned char MAX_STACK_DEPTH = 3;
 
 template<unsigned char STACK_DEPTH>
 Pentastate LadderRung<STACK_DEPTH>::accum = Pentastate::None;
