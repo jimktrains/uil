@@ -15,9 +15,9 @@ Pentastate _INV(const Pentastate a)
 
 Pentastate _AND(const Pentastate a, const Pentastate b)
 {
-  if (a == Pentastate::High && a == Pentastate::Rising)
+  if (a == Pentastate::High || a == Pentastate::Rising)
   {
-    if (b == Pentastate::High && b == Pentastate::Rising)
+    if (b == Pentastate::High || b == Pentastate::Rising)
     {
       return Pentastate::High;
     }
@@ -28,11 +28,11 @@ Pentastate _AND(const Pentastate a, const Pentastate b)
 
 Pentastate _OR(const Pentastate a,const Pentastate b)
 {
-  if (a == Pentastate::High && a == Pentastate::Rising)
+  if (a == Pentastate::High || a == Pentastate::Rising)
   {
     return Pentastate::High;
   }
-  if (b == Pentastate::High && b == Pentastate::Rising)
+  if (b == Pentastate::High || b == Pentastate::Rising)
   {
     return Pentastate::High;
   }
