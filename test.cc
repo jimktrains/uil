@@ -8,14 +8,16 @@ int main()
 {
   srand(time(NULL));
 
-  LadderInput button1 = LadderInput();
-  LadderOutput led1 = LadderOutput();
+  auto button1 = RandomInput();
+  auto led1 = TestOutput();
 
   LadderRung<0>()
     .LD(button1)
     .AND(button1)
+    .OUT(led1)
     .MPS()
       .LD(button1)
+      .OR(button1)
       .OUT(led1)
     .ORB()
     .OUT(led1);

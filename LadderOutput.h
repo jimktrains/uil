@@ -4,10 +4,29 @@
 class LadderOutput : public LadderInput
 {
   public:
-    void setValue(Pentastate value);
+    virtual void setValue(Pentastate value) = 0;
 };
 
-void LadderOutput :: setValue(Pentastate value)
+class TestOutput : public LadderOutput 
 {
+  Pentastate val;
+  public:
+    void setValue(Pentastate value);
+    Pentastate value();
+    TestOutput();
+};
+
+TestOutput :: TestOutput() :
+  val(Pentastate::None)
+{}
+
+void TestOutput :: setValue(Pentastate value)
+{
+  val = value;
   std::cout << "<-" << toString(value) << std::endl;
+}
+
+Pentastate TestOutput :: value()
+{
+  return val;
 }
