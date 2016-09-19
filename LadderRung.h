@@ -41,14 +41,14 @@ class LadderRung
     static Pentastate accum;
     static constexpr unsigned char MAX_STACK_DEPTH = 3;
     /**
-     * Loads a value into the accumulator
-     */
-    LadderRung<STACK_DEPTH> LD(LadderInput& in);
-    /**
      * Outputs the accumulator
      */
     LadderRung<STACK_DEPTH> OUT(LadderOutput& out);
 
+    /**
+     * Loads a value into the accumulator
+     */
+    LadderRung<STACK_DEPTH> LD(LadderInput& in);
     /**
      * AND the accumulator and input, placing the result in the accumulator
      */
@@ -57,6 +57,19 @@ class LadderRung
      * OR the accumulator and input, placing the result in the accumulator
      */
     LadderRung<STACK_DEPTH> OR(LadderInput& in);
+
+    /**
+     * Loads INV(value) into the accumulator
+     */
+    LadderRung<STACK_DEPTH> LDI(LadderInput& in);
+    /**
+     * AND the accumulator and INV(input), placing the result in the accumulator
+     */
+    LadderRung<STACK_DEPTH> ANDI(LadderInput& in);
+    /**
+     * OR the accumulator and INV(input), placing the result in the accumulator
+     */
+    LadderRung<STACK_DEPTH> ORI(LadderInput& in);
 
     /**
      * Inverts the value in the accumulator, storing the results in the
@@ -87,17 +100,17 @@ Pentastate LadderRung<STACK_DEPTH>::accum = Pentastate::None;
 
 template<unsigned char STACK_DEPTH>
 inline __attribute__((always_inline))
-LadderRung<STACK_DEPTH> LadderRung<STACK_DEPTH> :: LD(LadderInput& in)
+LadderRung<STACK_DEPTH> LadderRung<STACK_DEPTH> :: OUT(LadderOutput& out)
 {
-  accum = in.value();
+  out.setValue(accum);
   return LadderRung<STACK_DEPTH>();
 }
 
 template<unsigned char STACK_DEPTH>
 inline __attribute__((always_inline))
-LadderRung<STACK_DEPTH> LadderRung<STACK_DEPTH> :: OUT(LadderOutput& out)
+LadderRung<STACK_DEPTH> LadderRung<STACK_DEPTH> :: LD(LadderInput& in)
 {
-  out.setValue(accum);
+  accum = in.value();
   return LadderRung<STACK_DEPTH>();
 }
 
@@ -116,6 +129,31 @@ LadderRung<STACK_DEPTH> LadderRung<STACK_DEPTH> :: OR(LadderInput& in)
   accum = _OR(accum, in.value());
   return LadderRung<STACK_DEPTH>();
 }
+
+template<unsigned char STACK_DEPTH>
+inline __attribute__((always_inline))
+LadderRung<STACK_DEPTH> LadderRung<STACK_DEPTH> :: LDI(LadderInput& in)
+{
+  accum = _INV(in.value());
+  return LadderRung<STACK_DEPTH>();
+}
+
+template<unsigned char STACK_DEPTH>
+inline __attribute__((always_inline))
+LadderRung<STACK_DEPTH> LadderRung<STACK_DEPTH> :: ANDI(LadderInput& in)
+{
+  accum = _AND(accum, _INV(in.value()));
+  return LadderRung<STACK_DEPTH>();
+}
+
+template<unsigned char STACK_DEPTH>
+inline __attribute__((always_inline))
+LadderRung<STACK_DEPTH> LadderRung<STACK_DEPTH> :: ORI(LadderInput& in)
+{
+  accum = _OR(accum, _INV(in.value()));
+  return LadderRung<STACK_DEPTH>();
+}
+
 
 template<unsigned char STACK_DEPTH>
 inline __attribute__((always_inline))
