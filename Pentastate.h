@@ -30,3 +30,7 @@ Pentastate _XORF(const Pentastate a, const Pentastate b);
 Pentastate fromInt(const int i);
 
 const char *toString(Pentastate x);
+
+
+bool isHigh(Pentastate a);
+bool isLow(Pentastate a);
