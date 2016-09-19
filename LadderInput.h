@@ -25,3 +25,38 @@ Pentastate RandomInput :: value()
 }
 
 
+class SemiRandomInput : public LadderInput
+{
+  Pentastate i;
+  public:
+    SemiRandomInput();
+    Pentastate value();
+};
+
+
+
+SemiRandomInput :: SemiRandomInput() :
+  i(fromInt(rand() % 4))
+{
+}
+Pentastate SemiRandomInput :: value()
+{
+  return i;
+}
+
+class FixedInput : public LadderInput
+{
+  Pentastate i;
+  public:
+    SemiRandomInput(Pentastate input);
+    Pentastate value();
+};
+
+FixedInput :: SemiRandomInput(Pentastate input) :
+  i(input)
+{
+}
+Pentastate FixedInput :: value()
+{
+  return i;
+}
