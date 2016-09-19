@@ -20,7 +20,7 @@ class RandomInput : public LadderInput
 Pentastate RandomInput :: value()
 {
   int i = rand() % 4;
-  std::cout << "->" << toString(fromInt(i)) << std::endl;
+//  std::cout << "->" << toString(fromInt(i)) << std::endl;
   return fromInt(i);
 }
 

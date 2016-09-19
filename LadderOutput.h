@@ -26,7 +26,7 @@ TestOutput :: TestOutput() :
 void TestOutput :: setValue(Pentastate value)
 {
   val = value;
-  std::cout << "<-" << toString(value) << std::endl;
+//  std::cout << "<-" << toString(value) << std::endl;
 }
 
 Pentastate TestOutput :: value()
