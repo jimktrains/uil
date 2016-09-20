@@ -21,7 +21,7 @@ Pentastate RandomInput :: value()
 {
   int i = rand() % 4;
 //  std::cout << "->" << toString(fromInt(i)) << std::endl;
-  return fromInt(i);
+  return PentastateLogic::fromInt(i);
 }
 
 
@@ -36,7 +36,7 @@ class SemiRandomInput : public LadderInput
 
 
 SemiRandomInput :: SemiRandomInput() :
-  i(fromInt(rand() % 4))
+  i(PentastateLogic::fromInt(rand() % 4))
 {
 }
 Pentastate SemiRandomInput :: value()

@@ -118,7 +118,7 @@ template<unsigned char STACK_DEPTH>
 inline __attribute__((always_inline))
 LadderRung<STACK_DEPTH> LadderRung<STACK_DEPTH> :: AND(LadderInput& in)
 {
-  accum = _AND(accum, in.value());
+  accum = PentastateLogic::AND(accum, in.value());
   return LadderRung<STACK_DEPTH>();
 }
 
@@ -126,7 +126,7 @@ template<unsigned char STACK_DEPTH>
 inline __attribute__((always_inline))
 LadderRung<STACK_DEPTH> LadderRung<STACK_DEPTH> :: OR(LadderInput& in)
 {
-  accum = _OR(accum, in.value());
+  accum = PentastateLogic::OR(accum, in.value());
   return LadderRung<STACK_DEPTH>();
 }
 
@@ -134,7 +134,7 @@ template<unsigned char STACK_DEPTH>
 inline __attribute__((always_inline))
 LadderRung<STACK_DEPTH> LadderRung<STACK_DEPTH> :: LDI(LadderInput& in)
 {
-  accum = _INV(in.value());
+  accum = PentastateLogic::INV(in.value());
   return LadderRung<STACK_DEPTH>();
 }
 
@@ -142,7 +142,7 @@ template<unsigned char STACK_DEPTH>
 inline __attribute__((always_inline))
 LadderRung<STACK_DEPTH> LadderRung<STACK_DEPTH> :: ANDI(LadderInput& in)
 {
-  accum = _AND(accum, _INV(in.value()));
+  accum = PentastateLogic::AND(accum, PentastateLogic::INV(in.value()));
   return LadderRung<STACK_DEPTH>();
 }
 
@@ -150,7 +150,7 @@ template<unsigned char STACK_DEPTH>
 inline __attribute__((always_inline))
 LadderRung<STACK_DEPTH> LadderRung<STACK_DEPTH> :: ORI(LadderInput& in)
 {
-  accum = _OR(accum, _INV(in.value()));
+  accum = PentastateLogic::OR(accum, PentastateLogic::INV(in.value()));
   return LadderRung<STACK_DEPTH>();
 }
 
@@ -159,7 +159,7 @@ template<unsigned char STACK_DEPTH>
 inline __attribute__((always_inline))
 LadderRung<STACK_DEPTH> LadderRung<STACK_DEPTH> :: INV()
 {
-  accum = _INV(accum);
+  accum = PentastateLogic::INV(accum);
   return LadderRung<STACK_DEPTH>();
 }
 
@@ -177,7 +177,7 @@ inline __attribute__((always_inline))
 LadderRung<STACK_DEPTH - 1> LadderRung<STACK_DEPTH> :: ORB()
 {
   static_assert(STACK_DEPTH > 0, "Min Stack Depth exceeded");
-  LadderRung<STACK_DEPTH - 1>::accum = _OR(accum, LadderRung<STACK_DEPTH - 1>::accum);
+  LadderRung<STACK_DEPTH - 1>::accum = PentastateLogic::OR(accum, LadderRung<STACK_DEPTH - 1>::accum);
   return LadderRung<STACK_DEPTH - 1>();
 }
 
@@ -186,7 +186,7 @@ inline __attribute__((always_inline))
 LadderRung<STACK_DEPTH - 1> LadderRung<STACK_DEPTH> :: ANDB()
 {
   static_assert(STACK_DEPTH > 0, "Min Stack Depth exceeded");
-  LadderRung<STACK_DEPTH - 1>::accum = _AND(accum, LadderRung<STACK_DEPTH - 1>::accum);
+  LadderRung<STACK_DEPTH - 1>::accum = PentastateLogic::AND(accum, LadderRung<STACK_DEPTH - 1>::accum);
   return LadderRung<STACK_DEPTH - 1>();
 }
 

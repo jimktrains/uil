@@ -6,11 +6,11 @@
 char pairToSignal(Pentastate clear, Pentastate approach)
 {
   char S0w = ' ';
-  if (isHigh(approach))
+  if (PentastateLogic::isHigh(approach))
   {
     S0w = 'A';
   }
-  else if (isHigh(clear))
+  else if (PentastateLogic::isHigh(clear))
   {
     S0w = 'C';
   }
@@ -30,11 +30,11 @@ int main()
   auto T0 = TestOutput();
 
   auto Tm1e = SemiRandomInput();
-  auto Tm1w = FixedInput(_INV(Tm1e.value()));
+  auto Tm1w = FixedInput(PentastateLogic::INV(Tm1e.value()));
   auto Tm1 = TestOutput();
 
   auto T1e = SemiRandomInput();//FixedInput(Pentastate::Low);//SemiRandomInput();
-  auto T1w = FixedInput(_INV(T1e.value()));//FixedInput(Pentastate::Low);//_INV(T1e.value()));
+  auto T1w = FixedInput(PentastateLogic::INV(T1e.value()));//FixedInput(Pentastate::Low);//_INV(T1e.value()));
   auto T1 = TestOutput();
 
   auto S0wc = TestOutput();
@@ -102,9 +102,9 @@ int main()
   char S0w = pairToSignal(S0wc.value(), S0wa.value());
 
   std::cout << "             " << S0e << std::endl;
-  std::cout << "|  " << (isHigh(Tm1e.value()) ? "->" : isHigh(Tm1w.value()) ? "<-" : "  ")
-          << "  |  " << (isHigh(T0e.value()) ? "->" : isHigh(T0w.value()) ? "<-" : "  ")
-          << "  |  " << (isHigh(T1e.value()) ? "->" : isHigh(T1w.value()) ? "<-" : "  ")
+  std::cout << "|  " << (PentastateLogic::isHigh(Tm1e.value()) ? "->" : PentastateLogic::isHigh(Tm1w.value()) ? "<-" : "  ")
+          << "  |  " << (PentastateLogic::isHigh(T0e.value()) ? "->" :  PentastateLogic::isHigh(T0w.value()) ? "<-" : "  ")
+          << "  |  " << (PentastateLogic::isHigh(T1e.value()) ? "->" :  PentastateLogic::isHigh(T1w.value()) ? "<-" : "  ")
           << "  |" << std::endl;
   std::cout << "        " << S0w << std::endl;
 }

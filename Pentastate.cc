@@ -1,16 +1,16 @@
 #include "Pentastate.h"
 
-bool isHigh(Pentastate a)
+bool PentastateLogic::isHigh(Pentastate a)
 {
   return (a == Pentastate::High || a == Pentastate::Rising);
 }
 
-bool isLow(Pentastate a)
+bool  PentastateLogic::isLow(Pentastate a)
 {
   return (a == Pentastate::Low || a == Pentastate::Falling);
 }
 
-Pentastate _INV(const Pentastate a)
+Pentastate  PentastateLogic::INV(const Pentastate a)
 {
   switch(a) {
     case Pentastate::None: return Pentastate::None;
@@ -23,7 +23,7 @@ Pentastate _INV(const Pentastate a)
   }
 }
 
-Pentastate _AND(const Pentastate a, const Pentastate b)
+Pentastate  PentastateLogic::AND(const Pentastate a, const Pentastate b)
 {
   if (isHigh(a) && isHigh(b))
   {
@@ -33,7 +33,7 @@ Pentastate _AND(const Pentastate a, const Pentastate b)
   return Pentastate::Low;
 }
 
-Pentastate _OR(const Pentastate a,const Pentastate b)
+Pentastate PentastateLogic::OR(const Pentastate a,const Pentastate b)
 {
   if (isHigh(a) || isHigh(b))
   {
@@ -43,12 +43,12 @@ Pentastate _OR(const Pentastate a,const Pentastate b)
   return Pentastate::Low;
 }
 
-Pentastate _XOR(const Pentastate a, const Pentastate b)
+Pentastate PentastateLogic::XOR(const Pentastate a, const Pentastate b)
 {
-  return _AND(_OR(a,b),_INV(_AND(a,b)));
+  return AND(OR(a,b),INV(AND(a,b)));
 }
 
-Pentastate _ANDP(const Pentastate a, const Pentastate b)
+Pentastate PentastateLogic::ANDP(const Pentastate a, const Pentastate b)
 {
   if (a == Pentastate::Rising)
   {
@@ -61,7 +61,7 @@ Pentastate _ANDP(const Pentastate a, const Pentastate b)
   return Pentastate::Low;
 }
 
-Pentastate _ORP(const Pentastate a,const Pentastate b)
+Pentastate PentastateLogic::ORP(const Pentastate a,const Pentastate b)
 {
   if (a == Pentastate::Rising)
   {
@@ -75,12 +75,12 @@ Pentastate _ORP(const Pentastate a,const Pentastate b)
   return Pentastate::Low;
 }
 
-Pentastate _XORP(const Pentastate a, const Pentastate b)
+Pentastate PentastateLogic::XORP(const Pentastate a, const Pentastate b)
 {
-  return _ANDP(_ORP(a,b),_INV(_ANDP(a,b)));
+  return ANDP(ORP(a,b),INV(ANDP(a,b)));
 }
 
-Pentastate _ANDF(const Pentastate a, const Pentastate b)
+Pentastate PentastateLogic::ANDF(const Pentastate a, const Pentastate b)
 {
   if (a == Pentastate::Falling)
   {
@@ -93,7 +93,7 @@ Pentastate _ANDF(const Pentastate a, const Pentastate b)
   return Pentastate::Low;
 }
 
-Pentastate _ORF(const Pentastate a,const Pentastate b)
+Pentastate PentastateLogic::ORF(const Pentastate a,const Pentastate b)
 {
   if (a == Pentastate::Falling)
   {
@@ -107,12 +107,12 @@ Pentastate _ORF(const Pentastate a,const Pentastate b)
   return Pentastate::Low;
 }
 
-Pentastate _XORF(const Pentastate a, const Pentastate b)
+Pentastate PentastateLogic::XORF(const Pentastate a, const Pentastate b)
 {
-  return _ANDF(_ORF(a,b),_INV(_ANDF(a,b)));
+  return ANDF(ORF(a,b),INV(ANDF(a,b)));
 }
 
-Pentastate fromInt(const int i)
+Pentastate PentastateLogic::fromInt(const int i)
 {
   switch(i)
   {
@@ -125,7 +125,7 @@ Pentastate fromInt(const int i)
   }
 }
 
-const char *toString(Pentastate x)
+const char *PentastateLogic::toString(Pentastate x)
 {
   switch(x)
   {

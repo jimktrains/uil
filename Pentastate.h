@@ -12,25 +12,29 @@ enum class Pentastate
   High,
 };
 
-Pentastate _INV(const Pentastate a);
+class PentastateLogic
+{
 
-Pentastate _AND(const Pentastate a, const Pentastate b);
-Pentastate _OR(const Pentastate a,const Pentastate b);
-Pentastate _XOR(const Pentastate a, const Pentastate b);
+  public:
+    static Pentastate INV(const Pentastate a);
 
-Pentastate _ANDP(const Pentastate a, const Pentastate b);
-Pentastate _ORP(const Pentastate a,const Pentastate b);
-Pentastate _XORP(const Pentastate a, const Pentastate b);
+    static Pentastate AND(const Pentastate a, const Pentastate b);
+    static Pentastate OR(const Pentastate a,const Pentastate b);
+    static Pentastate XOR(const Pentastate a, const Pentastate b);
 
-Pentastate _ANDF(const Pentastate a, const Pentastate b);
-Pentastate _ORF(const Pentastate a,const Pentastate b);
-Pentastate _XORF(const Pentastate a, const Pentastate b);
+    static Pentastate ANDP(const Pentastate a, const Pentastate b);
+    static Pentastate ORP(const Pentastate a,const Pentastate b);
+    static Pentastate XORP(const Pentastate a, const Pentastate b);
 
-
-Pentastate fromInt(const int i);
-
-const char *toString(Pentastate x);
+    static Pentastate ANDF(const Pentastate a, const Pentastate b);
+    static Pentastate ORF(const Pentastate a,const Pentastate b);
+    static Pentastate XORF(const Pentastate a, const Pentastate b);
 
 
-bool isHigh(Pentastate a);
-bool isLow(Pentastate a);
+    static Pentastate fromInt(const int i);
+
+    static const char *toString(Pentastate x);
+
+    static bool isHigh(Pentastate a);
+    static bool isLow(Pentastate a);
+};
