@@ -20,7 +20,7 @@ class TestOutput : public LadderOutput
 };
 
 TestOutput :: TestOutput() :
-  val(Pentastate::None)
+  val(Pentastate::Low)
 {}
 
 void TestOutput :: setValue(Pentastate value)
