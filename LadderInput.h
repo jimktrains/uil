@@ -41,6 +41,7 @@ SemiRandomInput :: SemiRandomInput() :
 }
 Pentastate SemiRandomInput :: value()
 {
+//  std::cout << "->" << toString(i) << std::endl;
   return i;
 }
 
@@ -48,15 +49,16 @@ class FixedInput : public LadderInput
 {
   Pentastate i;
   public:
-    SemiRandomInput(Pentastate input);
+    FixedInput(Pentastate input);
     Pentastate value();
 };
 
-FixedInput :: SemiRandomInput(Pentastate input) :
+FixedInput :: FixedInput(Pentastate input) :
   i(input)
 {
 }
 Pentastate FixedInput :: value()
 {
+//  std::cout << "->" << toString(i) << std::endl;
   return i;
 }

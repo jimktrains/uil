@@ -25,7 +25,7 @@ Pentastate _INV(const Pentastate a)
 
 Pentastate _AND(const Pentastate a, const Pentastate b)
 {
-  if (isHigh(a) && isHigh(n))
+  if (isHigh(a) && isHigh(b))
   {
     return Pentastate::High;
   }
@@ -35,7 +35,7 @@ Pentastate _AND(const Pentastate a, const Pentastate b)
 
 Pentastate _OR(const Pentastate a,const Pentastate b)
 {
-  if (isHigh(a) || isHigh(n))
+  if (isHigh(a) || isHigh(b))
   {
     return Pentastate::High;
   }
