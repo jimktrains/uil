@@ -1,7 +1,7 @@
 CXX = g++
 CXXFLAG = -std=c++14 -Wall -Wextra -Werror -Wpedantic -Wsign-conversion \
 				  -Wold-style-cast -Wsign-promo -Wsign-promo -Wswitch-enum \
-					-Weffc++ -Wshadow -Wno-missing-braces
+					-Weffc++ -Wshadow -Wno-missing-braces -Os
 
 %.o: %.cc
 	${CXX} ${CXXFLAG} -c $?
@@ -14,4 +14,4 @@ asm: test.cc Pentastate.cc
 	${CXX} ${CXXFLAG} -fverbose-asm -S -g $?
 
 clean:
-	rm -f *.o test
+	rm -f *.o test *.s
