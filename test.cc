@@ -21,6 +21,15 @@ char pairToSignal(Pentastate clear, Pentastate approach)
   return S0w;
 }
 
+class TrackWestOcc : public TestOutput {};
+class TrackEastOcc : public TestOutput {};
+
+class SignalWestClear : public TestOutput {};
+class SignalWestApproach: public TestOutput {};
+
+class SignalEastClear : public TestOutput {};
+class SignalEastApproach: public TestOutput {};
+
 int main()
 {
   srand(time(NULL));
@@ -31,17 +40,17 @@ int main()
 
   auto Tm1e = SemiRandomInput();
   auto Tm1w = FixedInput(PentastateLogic::INV(Tm1e.value()));
-  auto Tm1 = TestOutput();
+  auto Tm1 = TrackWestOcc();
 
-  auto T1e = SemiRandomInput();//FixedInput(Pentastate::Low);//SemiRandomInput();
-  auto T1w = FixedInput(PentastateLogic::INV(T1e.value()));//FixedInput(Pentastate::Low);//_INV(T1e.value()));
-  auto T1 = TestOutput();
+  auto T1e = SemiRandomInput();
+  auto T1w = FixedInput(PentastateLogic::INV(T1e.value()));
+  auto T1 = TrackEastOcc();
 
-  auto S0wc = TestOutput();
-  auto S0wa = TestOutput();
+  auto S0wc = SignalWestClear();
+  auto S0wa = SignalWestApproach();
 
-  auto S0ec = TestOutput();
-  auto S0ea = TestOutput();
+  auto S0ec = SignalEastClear();
+  auto S0ea = SignalEastApproach();
 
   /*
    *                    S0e
@@ -60,19 +69,19 @@ int main()
     // Sets occupancy if there is a train going in either direction
     .LD(T1e)
     .OR(T1w)
-//    .OUT(T1)
+    .OUT(T1)
 
     // Sets occupancy if there is a train going in either direction
     .LD(Tm1e)
     .OR(Tm1w)
-  //  .OUT(Tm1)
+    .OUT(Tm1)
 
     // Clear iff no train for the next two blocks AND appoaching, not
     // leaving the signal
     .LDI(T0)
     .ANDI(T1)
     .ANDI(Tm1w)
-  //  .OUT(S0wc)
+    .OUT(S0wc)
 
     // Clear iff no train for the next one block AND appoaching, not
     // leaving the signal AND train in two blocks is headed in the same
@@ -80,14 +89,14 @@ int main()
     .LDI(T0)
     .AND(T1e)
     .ANDI(Tm1w)
-  //  .OUT(S0wa)
+    .OUT(S0wa)
 
     // Clear iff no train for the next two blocks AND appoaching, not
     // leaving the signal
     .LDI(T0)
     .ANDI(Tm1)
     .ANDI(T1e)
-   // .OUT(S0ec)
+    .OUT(S0ec)
 
     // If I don't have a train
     .LDI(T0)
@@ -96,7 +105,7 @@ int main()
     // and T1 doesn't have an east bound
     .ANDI(T1e)
     // east signal can be apprach
-  //  .OUT(S0ea)
+    .OUT(S0ea)
   ;
 
 

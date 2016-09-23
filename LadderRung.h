@@ -18,6 +18,12 @@ struct all_false< CONDITION, CONDITIONS... >
     const static bool value = !CONDITION::value && all_false<CONDITIONS...>::value;
 };
 
+template<typename T, typename... ALREADY_SET>
+using NoDuplicates =
+      typename std::enable_if<
+          all_false< std::is_same<ALREADY_SET, T>... >::value
+          >::type;
+
 /**
  * Represents a rung in the ladder logic.
  *
@@ -55,15 +61,10 @@ class LadderRung
   Pentastate (&stack)[MAX_STACK_DEPTH];
 
   public:
-  template<typename T>
-  using NoDuplicates =
-        typename std::enable_if< 
-            all_false< std::is_same<ALREADY_SET, T>... >::value
-            >::type;
     /**
      * Outputs the stack[STACK_DEPTH]
      */
-    template<typename OUT_TYPE, NoDuplicates<std::decay<OUT_TYPE>>* = nullptr>
+    template<typename OUT_TYPE, NoDuplicates<std::decay<OUT_TYPE>, ALREADY_SET...>* = nullptr>
     LadderRung<STACK_DEPTH, MAX_STACK_DEPTH, ALREADY_SET..., std::decay<OUT_TYPE>> OUT(OUT_TYPE& out);
 
     /**
@@ -125,7 +126,7 @@ LadderRung<STACK_DEPTH, MAX_STACK_DEPTH, ALREADY_SET...> :: LadderRung(Pentastat
 }
 
 template<unsigned char STACK_DEPTH, unsigned char MAX_STACK_DEPTH, typename ...ALREADY_SET>
-template<typename OUT_TYPE, NoDuplicates<std::decay<OUT_TYPE>>* = nullptr>
+template<typename OUT_TYPE, NoDuplicates<std::decay<OUT_TYPE>, ALREADY_SET...>*>
 inline __attribute__((always_inline))
 LadderRung<STACK_DEPTH, MAX_STACK_DEPTH, ALREADY_SET..., std::decay<OUT_TYPE>> LadderRung<STACK_DEPTH, MAX_STACK_DEPTH, ALREADY_SET...> :: OUT(OUT_TYPE& out)
 {
