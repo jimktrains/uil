@@ -44,6 +44,10 @@ using NoDuplicates =
  * the type checker, which results in less code being generated and run upon
  * each function call.
  *
+ * The ALREADY_SET set type parameter is to enforce setting an output only
+ * once.  If you need to set an output more than once a cycle, figure out
+ * how to combine the two sets (OR, AND)?
+ *
  * Example:
  *
  *    LadderRung<0>
@@ -53,6 +57,18 @@ using NoDuplicates =
  *        .LD(input3)
  *        .AND(input4)
  *      .ORB()
+ *      .OUT(output);
+ *
+ * Non working example:
+ *
+ *    LadderRung<0>
+ *      .LD(input)
+ *      .OR(input2)
+ *      .MPS()
+ *        .LD(input3)
+ *        .AND(input4)
+ *      .ORB()
+ *      .OUT(output)
  *      .OUT(output);
  */
 template<unsigned char STACK_DEPTH, unsigned char MAX_STACK_DEPTH, typename ...ALREADY_SET>
