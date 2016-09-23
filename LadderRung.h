@@ -3,6 +3,21 @@
 #include "LadderInput.h"
 #include "LadderOutput.h"
 
+template< typename... CONDITIONS >
+struct all_false;
+
+template<>
+struct all_false<>
+{
+    const static bool value = true;
+};
+
+template< typename CONDITION, typename... CONDITIONS >
+struct all_false< CONDITION, CONDITIONS... >
+{
+    const static bool value = !CONDITION::value && all_false<CONDITIONS...>::value;
+};
+
 /**
  * Represents a rung in the ladder logic.
  *
@@ -34,159 +49,171 @@
  *      .ORB()
  *      .OUT(output);
  */
-template<unsigned char STACK_DEPTH>
+template<unsigned char STACK_DEPTH, unsigned char MAX_STACK_DEPTH, typename ...ALREADY_SET>
 class LadderRung
 {
+  Pentastate (&stack)[MAX_STACK_DEPTH];
+
   public:
-    static Pentastate accum;
-    static constexpr unsigned char MAX_STACK_DEPTH = 3;
+  template<typename T>
+  using NoDuplicates =
+        typename std::enable_if< 
+            all_false< std::is_same<ALREADY_SET, T>... >::value
+            >::type;
     /**
-     * Outputs the accumulator
+     * Outputs the stack[STACK_DEPTH]
      */
-    LadderRung<STACK_DEPTH> OUT(LadderOutput& out);
+    template<typename OUT_TYPE, NoDuplicates<std::decay<OUT_TYPE>>* = nullptr>
+    LadderRung<STACK_DEPTH, MAX_STACK_DEPTH, ALREADY_SET..., std::decay<OUT_TYPE>> OUT(OUT_TYPE& out);
 
     /**
-     * Loads a value into the accumulator
+     * Loads a value into the stack[STACK_DEPTH]
      */
-    LadderRung<STACK_DEPTH> LD(LadderInput& in);
+    LadderRung<STACK_DEPTH, MAX_STACK_DEPTH, ALREADY_SET...> LD(LadderInput& in);
     /**
-     * AND the accumulator and input, placing the result in the accumulator
+     * AND the stack[STACK_DEPTH] and input, placing the result in the stack[STACK_DEPTH]
      */
-    LadderRung<STACK_DEPTH> AND(LadderInput& in);
+    LadderRung<STACK_DEPTH, MAX_STACK_DEPTH, ALREADY_SET...> AND(LadderInput& in);
     /**
-     * OR the accumulator and input, placing the result in the accumulator
+     * OR the stack[STACK_DEPTH] and input, placing the result in the stack[STACK_DEPTH]
      */
-    LadderRung<STACK_DEPTH> OR(LadderInput& in);
+    LadderRung<STACK_DEPTH, MAX_STACK_DEPTH, ALREADY_SET...> OR(LadderInput& in);
 
     /**
-     * Loads INV(value) into the accumulator
+     * Loads INV(value) into the stack[STACK_DEPTH]
      */
-    LadderRung<STACK_DEPTH> LDI(LadderInput& in);
+    LadderRung<STACK_DEPTH, MAX_STACK_DEPTH, ALREADY_SET...> LDI(LadderInput& in);
     /**
-     * AND the accumulator and INV(input), placing the result in the accumulator
+     * AND the stack[STACK_DEPTH] and INV(input), placing the result in the stack[STACK_DEPTH]
      */
-    LadderRung<STACK_DEPTH> ANDI(LadderInput& in);
+    LadderRung<STACK_DEPTH, MAX_STACK_DEPTH, ALREADY_SET...> ANDI(LadderInput& in);
     /**
-     * OR the accumulator and INV(input), placing the result in the accumulator
+     * OR the stack[STACK_DEPTH] and INV(input), placing the result in the stack[STACK_DEPTH]
      */
-    LadderRung<STACK_DEPTH> ORI(LadderInput& in);
+    LadderRung<STACK_DEPTH, MAX_STACK_DEPTH, ALREADY_SET...> ORI(LadderInput& in);
 
     /**
-     * Inverts the value in the accumulator, storing the results in the
-     * accumulator
+     * Inverts the value in the stack[STACK_DEPTH], storing the results in the
+     * stack[STACK_DEPTH]
      */
-    LadderRung<STACK_DEPTH> INV();
+    LadderRung<STACK_DEPTH, MAX_STACK_DEPTH, ALREADY_SET...> INV();
 
     /**
-     * Pushes the accumulator onto the stack, rests the accumulator, and
+     * Pushes the stack[STACK_DEPTH] onto the stack, rests the stack[STACK_DEPTH], and
      * increments the stack.
      */
-    LadderRung<STACK_DEPTH + 1> MPS();
+    LadderRung<STACK_DEPTH + 1, MAX_STACK_DEPTH, ALREADY_SET...> MPS();
     /**
-     * ORs the value on the top of the stack and the accumulator, placing the
-     * result in the accumulator and decrementing the stack.
+     * ORs the value on the top of the stack and the stack[STACK_DEPTH], placing the
+     * result in the stack[STACK_DEPTH] and decrementing the stack.
      */
-    LadderRung<STACK_DEPTH - 1> ORB();
+    LadderRung<STACK_DEPTH - 1, MAX_STACK_DEPTH, ALREADY_SET...> ORB();
     /**
-     * ANDs the value on the top of the stack and the accumulator, placing the
-     * result in the accumulator and decrementing the stack.
+     * ANDs the value on the top of the stack and the stack[STACK_DEPTH], placing the
+     * result in the stack[STACK_DEPTH] and decrementing the stack.
      */
-    LadderRung<STACK_DEPTH - 1> ANDB();
+    LadderRung<STACK_DEPTH - 1, MAX_STACK_DEPTH, ALREADY_SET...> ANDB();
+
+    LadderRung(Pentastate (&base_stack)[MAX_STACK_DEPTH]);
 };
 
-
-template<unsigned char STACK_DEPTH>
-Pentastate LadderRung<STACK_DEPTH>::accum = Pentastate::None;
-
-template<unsigned char STACK_DEPTH>
+template<unsigned char STACK_DEPTH, unsigned char MAX_STACK_DEPTH, typename ...ALREADY_SET>
 inline __attribute__((always_inline))
-LadderRung<STACK_DEPTH> LadderRung<STACK_DEPTH> :: OUT(LadderOutput& out)
+LadderRung<STACK_DEPTH, MAX_STACK_DEPTH, ALREADY_SET...> :: LadderRung(Pentastate (&base_stack)[MAX_STACK_DEPTH]) :
+   stack(base_stack)
 {
-  out.setValue(accum);
-  return LadderRung<STACK_DEPTH>();
 }
 
-template<unsigned char STACK_DEPTH>
+template<unsigned char STACK_DEPTH, unsigned char MAX_STACK_DEPTH, typename ...ALREADY_SET>
+template<typename OUT_TYPE, NoDuplicates<std::decay<OUT_TYPE>>* = nullptr>
 inline __attribute__((always_inline))
-LadderRung<STACK_DEPTH> LadderRung<STACK_DEPTH> :: LD(LadderInput& in)
+LadderRung<STACK_DEPTH, MAX_STACK_DEPTH, ALREADY_SET..., std::decay<OUT_TYPE>> LadderRung<STACK_DEPTH, MAX_STACK_DEPTH, ALREADY_SET...> :: OUT(OUT_TYPE& out)
 {
-  accum = in.value();
-  return LadderRung<STACK_DEPTH>();
+  out.setValue(stack[STACK_DEPTH]);
+  return LadderRung<STACK_DEPTH, MAX_STACK_DEPTH, ALREADY_SET..., std::decay<OUT_TYPE>>(stack);
 }
 
-template<unsigned char STACK_DEPTH>
+template<unsigned char STACK_DEPTH, unsigned char MAX_STACK_DEPTH, typename ...ALREADY_SET>
 inline __attribute__((always_inline))
-LadderRung<STACK_DEPTH> LadderRung<STACK_DEPTH> :: AND(LadderInput& in)
+LadderRung<STACK_DEPTH, MAX_STACK_DEPTH, ALREADY_SET...> LadderRung<STACK_DEPTH, MAX_STACK_DEPTH, ALREADY_SET...> :: LD(LadderInput& in)
 {
-  accum = PentastateLogic::AND(accum, in.value());
-  return LadderRung<STACK_DEPTH>();
+  stack[STACK_DEPTH] = in.value();
+  return LadderRung<STACK_DEPTH, MAX_STACK_DEPTH, ALREADY_SET...>(stack);
 }
 
-template<unsigned char STACK_DEPTH>
+template<unsigned char STACK_DEPTH, unsigned char MAX_STACK_DEPTH, typename ...ALREADY_SET>
 inline __attribute__((always_inline))
-LadderRung<STACK_DEPTH> LadderRung<STACK_DEPTH> :: OR(LadderInput& in)
+LadderRung<STACK_DEPTH, MAX_STACK_DEPTH, ALREADY_SET...> LadderRung<STACK_DEPTH, MAX_STACK_DEPTH, ALREADY_SET...> :: AND(LadderInput& in)
 {
-  accum = PentastateLogic::OR(accum, in.value());
-  return LadderRung<STACK_DEPTH>();
+  stack[STACK_DEPTH] = PentastateLogic::AND(stack[STACK_DEPTH], in.value());
+  return LadderRung<STACK_DEPTH, MAX_STACK_DEPTH, ALREADY_SET...>(stack);
 }
 
-template<unsigned char STACK_DEPTH>
+template<unsigned char STACK_DEPTH, unsigned char MAX_STACK_DEPTH, typename ...ALREADY_SET>
 inline __attribute__((always_inline))
-LadderRung<STACK_DEPTH> LadderRung<STACK_DEPTH> :: LDI(LadderInput& in)
+LadderRung<STACK_DEPTH, MAX_STACK_DEPTH, ALREADY_SET...> LadderRung<STACK_DEPTH, MAX_STACK_DEPTH, ALREADY_SET...> :: OR(LadderInput& in)
 {
-  accum = PentastateLogic::INV(in.value());
-  return LadderRung<STACK_DEPTH>();
+  stack[STACK_DEPTH] = PentastateLogic::OR(stack[STACK_DEPTH], in.value());
+  return LadderRung<STACK_DEPTH, MAX_STACK_DEPTH, ALREADY_SET...>(stack);
 }
 
-template<unsigned char STACK_DEPTH>
+template<unsigned char STACK_DEPTH, unsigned char MAX_STACK_DEPTH, typename ...ALREADY_SET>
 inline __attribute__((always_inline))
-LadderRung<STACK_DEPTH> LadderRung<STACK_DEPTH> :: ANDI(LadderInput& in)
+LadderRung<STACK_DEPTH, MAX_STACK_DEPTH, ALREADY_SET...> LadderRung<STACK_DEPTH, MAX_STACK_DEPTH, ALREADY_SET...> :: LDI(LadderInput& in)
 {
-  accum = PentastateLogic::AND(accum, PentastateLogic::INV(in.value()));
-  return LadderRung<STACK_DEPTH>();
+  stack[STACK_DEPTH] = PentastateLogic::INV(in.value());
+  return LadderRung<STACK_DEPTH, MAX_STACK_DEPTH, ALREADY_SET...>(stack);
 }
 
-template<unsigned char STACK_DEPTH>
+template<unsigned char STACK_DEPTH, unsigned char MAX_STACK_DEPTH, typename ...ALREADY_SET>
 inline __attribute__((always_inline))
-LadderRung<STACK_DEPTH> LadderRung<STACK_DEPTH> :: ORI(LadderInput& in)
+LadderRung<STACK_DEPTH, MAX_STACK_DEPTH, ALREADY_SET...> LadderRung<STACK_DEPTH, MAX_STACK_DEPTH, ALREADY_SET...> :: ANDI(LadderInput& in)
 {
-  accum = PentastateLogic::OR(accum, PentastateLogic::INV(in.value()));
-  return LadderRung<STACK_DEPTH>();
+  stack[STACK_DEPTH] = PentastateLogic::AND(stack[STACK_DEPTH], PentastateLogic::INV(in.value()));
+  return LadderRung<STACK_DEPTH, MAX_STACK_DEPTH, ALREADY_SET...>(stack);
+}
+
+template<unsigned char STACK_DEPTH, unsigned char MAX_STACK_DEPTH, typename ...ALREADY_SET>
+inline __attribute__((always_inline))
+LadderRung<STACK_DEPTH, MAX_STACK_DEPTH, ALREADY_SET...> LadderRung<STACK_DEPTH, MAX_STACK_DEPTH, ALREADY_SET...> :: ORI(LadderInput& in)
+{
+  stack[STACK_DEPTH] = PentastateLogic::OR(stack[STACK_DEPTH], PentastateLogic::INV(in.value()));
+  return LadderRung<STACK_DEPTH, MAX_STACK_DEPTH, ALREADY_SET...>(stack);
 }
 
 
-template<unsigned char STACK_DEPTH>
+template<unsigned char STACK_DEPTH, unsigned char MAX_STACK_DEPTH, typename ...ALREADY_SET>
 inline __attribute__((always_inline))
-LadderRung<STACK_DEPTH> LadderRung<STACK_DEPTH> :: INV()
+LadderRung<STACK_DEPTH, MAX_STACK_DEPTH, ALREADY_SET...> LadderRung<STACK_DEPTH, MAX_STACK_DEPTH, ALREADY_SET...> :: INV()
 {
-  accum = PentastateLogic::INV(accum);
-  return LadderRung<STACK_DEPTH>();
+  stack[STACK_DEPTH] = PentastateLogic::INV(stack[STACK_DEPTH]);
+  return LadderRung<STACK_DEPTH, MAX_STACK_DEPTH, ALREADY_SET...>(stack);
 }
 
-template<unsigned char STACK_DEPTH>
+template<unsigned char STACK_DEPTH, unsigned char MAX_STACK_DEPTH, typename ...ALREADY_SET>
 inline __attribute__((always_inline))
-LadderRung<STACK_DEPTH + 1> LadderRung<STACK_DEPTH> :: MPS()
+LadderRung<STACK_DEPTH + 1, MAX_STACK_DEPTH, ALREADY_SET...> LadderRung<STACK_DEPTH, MAX_STACK_DEPTH, ALREADY_SET...> :: MPS()
 {
   static_assert(STACK_DEPTH < MAX_STACK_DEPTH, "Max Stack Depth exceeded");
-  LadderRung<STACK_DEPTH + 1>::accum = Pentastate::None;
-  return LadderRung<STACK_DEPTH + 1>();
+  stack[STACK_DEPTH + 1] = Pentastate::None;
+  return LadderRung<STACK_DEPTH + 1, MAX_STACK_DEPTH, ALREADY_SET...>(stack);
 }
 
-template<unsigned char STACK_DEPTH>
+template<unsigned char STACK_DEPTH, unsigned char MAX_STACK_DEPTH, typename ...ALREADY_SET>
 inline __attribute__((always_inline))
-LadderRung<STACK_DEPTH - 1> LadderRung<STACK_DEPTH> :: ORB()
+LadderRung<STACK_DEPTH - 1, MAX_STACK_DEPTH, ALREADY_SET...> LadderRung<STACK_DEPTH, MAX_STACK_DEPTH, ALREADY_SET...> :: ORB()
 {
   static_assert(STACK_DEPTH > 0, "Min Stack Depth exceeded");
-  LadderRung<STACK_DEPTH - 1>::accum = PentastateLogic::OR(accum, LadderRung<STACK_DEPTH - 1>::accum);
-  return LadderRung<STACK_DEPTH - 1>();
+  stack[STACK_DEPTH - 1] = PentastateLogic::OR(stack[STACK_DEPTH], stack[STACK_DEPTH - 1]);
+  return LadderRung<STACK_DEPTH - 1, MAX_STACK_DEPTH, ALREADY_SET...>(stack);
 }
 
-template<unsigned char STACK_DEPTH>
+template<unsigned char STACK_DEPTH, unsigned char MAX_STACK_DEPTH, typename ...ALREADY_SET>
 inline __attribute__((always_inline))
-LadderRung<STACK_DEPTH - 1> LadderRung<STACK_DEPTH> :: ANDB()
+LadderRung<STACK_DEPTH - 1, MAX_STACK_DEPTH, ALREADY_SET...> LadderRung<STACK_DEPTH, MAX_STACK_DEPTH, ALREADY_SET...> :: ANDB()
 {
   static_assert(STACK_DEPTH > 0, "Min Stack Depth exceeded");
-  LadderRung<STACK_DEPTH - 1>::accum = PentastateLogic::AND(accum, LadderRung<STACK_DEPTH - 1>::accum);
-  return LadderRung<STACK_DEPTH - 1>();
+  stack[STACK_DEPTH - 1] = PentastateLogic::AND(stack[STACK_DEPTH], stack[STACK_DEPTH - 1]);
+  return LadderRung<STACK_DEPTH - 1, MAX_STACK_DEPTH, ALREADY_SET...>(stack);
 }
 

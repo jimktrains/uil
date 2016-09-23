@@ -49,7 +49,9 @@ int main()
    *            S0w
    */
 
-  LadderRung<0>()
+  Pentastate x[] = {Pentastate::None, Pentastate::None, Pentastate::None};
+
+  LadderRung<0, 3>(x)
     // Sets occupancy if there is a train going in either direction
     .LD(T0e)
     .OR(T0w)
@@ -58,19 +60,19 @@ int main()
     // Sets occupancy if there is a train going in either direction
     .LD(T1e)
     .OR(T1w)
-    .OUT(T1)
+//    .OUT(T1)
 
     // Sets occupancy if there is a train going in either direction
     .LD(Tm1e)
     .OR(Tm1w)
-    .OUT(Tm1)
+  //  .OUT(Tm1)
 
     // Clear iff no train for the next two blocks AND appoaching, not
     // leaving the signal
     .LDI(T0)
     .ANDI(T1)
     .ANDI(Tm1w)
-    .OUT(S0wc)
+  //  .OUT(S0wc)
 
     // Clear iff no train for the next one block AND appoaching, not
     // leaving the signal AND train in two blocks is headed in the same
@@ -78,14 +80,14 @@ int main()
     .LDI(T0)
     .AND(T1e)
     .ANDI(Tm1w)
-    .OUT(S0wa)
+  //  .OUT(S0wa)
 
     // Clear iff no train for the next two blocks AND appoaching, not
     // leaving the signal
     .LDI(T0)
     .ANDI(Tm1)
     .ANDI(T1e)
-    .OUT(S0ec)
+   // .OUT(S0ec)
 
     // If I don't have a train
     .LDI(T0)
@@ -94,7 +96,7 @@ int main()
     // and T1 doesn't have an east bound
     .ANDI(T1e)
     // east signal can be apprach
-    .OUT(S0ea)
+  //  .OUT(S0ea)
   ;
 
 
