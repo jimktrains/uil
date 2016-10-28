@@ -212,7 +212,7 @@ template<unsigned char STACK_DEPTH, unsigned char MAX_STACK_DEPTH, typename ...A
 inline __attribute__((always_inline))
 LadderRung<STACK_DEPTH + 1, MAX_STACK_DEPTH, ALREADY_SET...> LadderRung<STACK_DEPTH, MAX_STACK_DEPTH, ALREADY_SET...> :: MPS()
 {
-  static_assert(STACK_DEPTH < MAX_STACK_DEPTH, "Max Stack Depth exceeded");
+  static_assert( (STACK_DEPTH + 1) < MAX_STACK_DEPTH, "Max Stack Depth exceeded");
   stack[STACK_DEPTH + 1] = Pentastate::None;
   return LadderRung<STACK_DEPTH + 1, MAX_STACK_DEPTH, ALREADY_SET...>(stack);
 }
