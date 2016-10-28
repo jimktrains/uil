@@ -80,7 +80,7 @@ class LadderRung
     /**
      * Outputs the stack[STACK_DEPTH]
      */
-    template<typename OUT_TYPE, NoDuplicates<std::decay<OUT_TYPE>, ALREADY_SET...>* = nullptr>
+    template<typename OUT_TYPE>
     LadderRung<STACK_DEPTH, MAX_STACK_DEPTH, ALREADY_SET..., std::decay<OUT_TYPE>> OUT(OUT_TYPE& out);
 
     /**
@@ -142,10 +142,11 @@ LadderRung<STACK_DEPTH, MAX_STACK_DEPTH, ALREADY_SET...> :: LadderRung(Pentastat
 }
 
 template<unsigned char STACK_DEPTH, unsigned char MAX_STACK_DEPTH, typename ...ALREADY_SET>
-template<typename OUT_TYPE, NoDuplicates<std::decay<OUT_TYPE>, ALREADY_SET...>*>
+template<typename OUT_TYPE>
 inline __attribute__((always_inline))
 LadderRung<STACK_DEPTH, MAX_STACK_DEPTH, ALREADY_SET..., std::decay<OUT_TYPE>> LadderRung<STACK_DEPTH, MAX_STACK_DEPTH, ALREADY_SET...> :: OUT(OUT_TYPE& out)
 {
+  static_assert( all_false< std::is_same<ALREADY_SET, std::decay<OUT_TYPE>>... >::value, "Already outputed");
   out.setValue(stack[STACK_DEPTH]);
   return LadderRung<STACK_DEPTH, MAX_STACK_DEPTH, ALREADY_SET..., std::decay<OUT_TYPE>>(stack);
 }
